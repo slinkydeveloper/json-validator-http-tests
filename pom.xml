@@ -14,8 +14,23 @@
   </modules>
 
   <properties>
-    <vertx.version>3.6.0-SNAPSHOT</vertx.version>
+    <vertx.version>3.5.4-SNAPSHOT</vertx.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>allow-snapshots</id>
+      <activation><activeByDefault>true</activeByDefault></activation>
+      <repositories>
+        <repository>
+          <id>snapshots-repo</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>

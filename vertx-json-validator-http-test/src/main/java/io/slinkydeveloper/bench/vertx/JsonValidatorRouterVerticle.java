@@ -27,12 +27,12 @@ public class JsonValidatorRouterVerticle extends AbstractJsonValidatorRouterVert
     }
 
     @Override
-    public void addHandlers(Route route, String schema, URI scope) {
+    public Handler<RoutingContext> getHandler(String schema, URI scope) {
         final Schema s = schemaParser.parseSchemaFromString(schema, scope);
-        route.handler(routingContext ->
+        return routingContext ->
             s.validate(new JsonObject(routingContext.getBodyAsString())).setHandler(ar -> {
                 if (ar.succeeded()) routingContext.response().setStatusCode(200).setStatusMessage("OK").end();
                 else routingContext.response().setStatusCode(400).setStatusMessage("Validation error").end(ar.cause().toString());
-            }));
+            });
     }
 }

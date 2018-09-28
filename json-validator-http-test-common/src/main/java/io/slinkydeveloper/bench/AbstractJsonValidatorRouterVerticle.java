@@ -34,12 +34,12 @@ public abstract class AbstractJsonValidatorRouterVerticle extends AbstractVertic
       try {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
-        addHandlers(router.post("/address").consumes("application/json"), event.result().resultAt(0), getClass().getResource("/schemas/address.json").toURI());
-        addHandlers(router.post("/card").consumes("application/json"), event.result().resultAt(1), getClass().getResource("/schemas/card.json").toURI());
-        addHandlers(router.post("/card_id").consumes("application/json"), event.result().resultAt(2), getClass().getResource("/schemas/card_id.json").toURI());
-        addHandlers(router.post("/geo").consumes("application/json"), event.result().resultAt(3), getClass().getResource("/schemas/geo.json").toURI());
-        addHandlers(router.post("/person").consumes("application/json"), event.result().resultAt(4), getClass().getResource("/schemas/person.json").toURI());
-        addHandlers(router.post("/super_schema").consumes("application/json"), event.result().resultAt(5), getClass().getResource("/schemas/super_schema.json").toURI());
+        router.post("/address").consumes("application/json").handler(getHandler(event.result().resultAt(0), getClass().getResource("/schemas/address.json").toURI()));
+        router.post("/card").consumes("application/json").handler(getHandler(event.result().resultAt(1), getClass().getResource("/schemas/card.json").toURI()));
+        router.post("/card_id").consumes("application/json").handler(getHandler(event.result().resultAt(2), getClass().getResource("/schemas/card_id.json").toURI()));
+        router.post("/geo").consumes("application/json").handler(getHandler(event.result().resultAt(3), getClass().getResource("/schemas/geo.json").toURI()));
+        router.post("/person").consumes("application/json").handler(getHandler(event.result().resultAt(4), getClass().getResource("/schemas/person.json").toURI()));
+        router.post("/super_schema").consumes("application/json").handler(getHandler(event.result().resultAt(5), getClass().getResource("/schemas/super_schema.json").toURI()));
         vertx.createHttpServer().requestHandler(router::accept).listen(config().getInteger("port", 8080), ar -> {
           if (ar.failed()) startFuture.fail(ar.cause());
           System.out.println("Deployed verticle server " + getClass().getName() + " at http://localhost:" + ar.result().actualPort());
@@ -51,6 +51,6 @@ public abstract class AbstractJsonValidatorRouterVerticle extends AbstractVertic
     });
   }
 
-  public abstract void addHandlers(Route route, String schema, URI scope);
+  public abstract Handler<RoutingContext> getHandler(String schema, URI scope);
 
 }

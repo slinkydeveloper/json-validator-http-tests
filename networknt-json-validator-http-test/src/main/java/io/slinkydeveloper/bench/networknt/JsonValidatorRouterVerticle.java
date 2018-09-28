@@ -22,16 +22,21 @@ public class JsonValidatorRouterVerticle extends AbstractJsonValidatorRouterVert
     }
 
     @Override
-    public void addHandlers(Route route, String schema, URI scope) {
+    public Handler<RoutingContext> getHandler(String schema, URI scope) {
         final JsonSchema s = factory.getSchema(schema);
-        route.blockingHandler(routingContext -> {
-            try {
-                Set<ValidationMessage> errors = s.validate(Json.mapper.readTree(routingContext.getBodyAsString()));
-                if (errors.isEmpty()) routingContext.response().setStatusCode(200).setStatusMessage("OK").end();
-                else routingContext.response().setStatusCode(400).setStatusMessage("Validation error").end(errors.iterator().next().getMessage());
-            } catch (IOException e) {
-                routingContext.response().setStatusCode(400).setStatusMessage("Validation error").end(e.toString());
-            }
-        });
+        return routingContext -> {
+            vertx.executeBlocking(fut -> {
+                try {
+                    Set<ValidationMessage> errors = s.validate(Json.mapper.readTree(routingContext.getBodyAsString()));
+                    if (errors.isEmpty()) fut.complete();
+                    else fut.fail(new Exception(errors.iterator().next().getMessage()));
+                } catch (IOException e) {
+                    fut.fail(e);
+                }
+            }, ar -> {
+                if (ar.succeeded()) routingContext.response().setStatusCode(200).setStatusMessage("OK").end();
+                else routingContext.response().setStatusCode(400).setStatusMessage("Validation error").end(ar.cause().toString());
+            });
+        };
     }
 }
