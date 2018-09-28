@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "faker": "name.findName"
+    },
+    "email": {
+      "type": "string",
+      "faker": "internet.email"
+    },
+    "param": {
+      "type": "number",
+      "minimum": 3,
+      "maximum": 10
+    },
+    "child": {
+      "type": "object",
+      "properties": {
+        "superchild": {
+          "type": "array",
+          "minItems": 100,
+          "maxItems": 1000,
+          "items": {
+            "type": "string",
+            "enum": ["a", "b", "c"]
+          }
+        },
+        "anotherchild": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number"
+            },
+            "b": {
+              "type": "boolean"
+            },
+            "c": {
+              "type": "string"
+            },
+            "d": {
+              "type": "integer"
+            },
+            "e": {
+              "type": "array",
+              "minItems": 100,
+              "items": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ],
+  "additionalProperties": {
+    "type": "string",
+    "format": "email"
+  }
+}
